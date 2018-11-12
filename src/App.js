@@ -1,25 +1,36 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import { inject, observer } from "mobx-react";
 
+@inject("TodoStore")
+@observer
 class App extends Component {
+  handleSubmit = e => {
+    e.preventDefault();
+    const todo = this.todo.value;
+    this.props.TodoStore.addTodo(todo);
+    this.todo.value = "";
+  };
+
   render() {
+    const { TodoStore } = this.props;
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+        <h2>You have {TodoStore.total} todos.</h2>
+
+        <form onSubmit={e => this.handleSubmit(e)}>
+          <input
+            type="text"
+            placeholder="Enter Todo"
+            ref={input => (this.todo = input)}
+          />
+          <button>Add Todo</button>
+        </form>
+
+        <ul>
+          {TodoStore.todos.map((todo, index) => (
+            <li key={index}>{todo}</li>
+          ))}
+        </ul>
       </div>
     );
   }
